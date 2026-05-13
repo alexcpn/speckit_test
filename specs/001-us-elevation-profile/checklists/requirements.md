@@ -33,8 +33,13 @@
 
 - Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`.
 - The user's prompt referenced "Python" as the target language; that language choice is deliberately deferred to `plan.md` (Technical Context) so the spec remains tech-agnostic.
-- `/speckit-clarify` session 2026-05-13 added three concrete decisions (Clarifications block in `spec.md`):
-  1. **Coverage was widened**: from CONUS-only to CONUS + US territories (Hawaii, Puerto Rico); target dataset pinned to ~1,756 NED files / ~23 billion 64-bit samples.
-  2. **Source format pinned**: GeoTIFF (.tif) only; other NED encodings explicitly out of scope.
-  3. **Path-length range pinned**: 1 km – 200 km; out-of-range pairs are rejected.
+- `/speckit-clarify` ran in two sessions on 2026-05-13 (six clarifications total, all recorded under the same `### Session 2026-05-13` heading in `spec.md`):
+  - **Session 1** (scope/scale):
+    1. Coverage widened from CONUS-only to CONUS + US territories (Hawaii, Puerto Rico); dataset pinned to ~1,756 NED files / ~23 billion 64-bit samples.
+    2. Source format pinned to GeoTIFF (`.tif`) only.
+    3. Path-length range pinned to 1 km – 200 km; out-of-range pairs rejected.
+  - **Session 2** (architecture/accuracy/API):
+    4. Tile metadata index is persisted to an on-disk sidecar (option B); fresh processes reload in seconds.
+    5. Off-grid elevations are computed by bilinear interpolation only; no-data inputs propagate strictly.
+    6. No-data Path Profile samples use NaN-in-place; Path Profile exposes a derived `no_data_segments` list.
 - Two original Assumption defaults remain in force (manual data acquisition; RF analysis out of scope).

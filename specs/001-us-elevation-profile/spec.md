@@ -15,6 +15,9 @@
 - Q: Dataset scale the module must handle → A: Full CONUS at native high resolution, **plus US territories** (notably Hawaii and Puerto Rico). Target dataset for v1 is approximately **1,756 NED tile files** comprising **~23 billion elevation samples**, each stored as a **64-bit float** (≈ 180 GB raw if fully resident).
 - Q: Concrete NED file format(s) supported in v1 → A: **GeoTIFF only** (`.tif`). The module loads USGS 3DEP-style single-file GeoTIFF tiles; other historical NED encodings (GridFloat, ArcGrid, IMG, etc.) are out of scope for v1.
 - Q: Path-length range the module must serve → A: **1 km to 200 km** great-circle distance between transmitter and receiver. Endpoint pairs outside this range are out of supported scope for v1 and are rejected with a clear out-of-range error.
+- Q: Tile-index persistence across sessions → A: **Persistent on-disk metadata index** (option B). The small index of tile metadata (paths, bounding boxes, resolutions, content fingerprints) is written to a sidecar after registration and reloaded by subsequent processes in seconds; staleness is detected via file mtime/hash and only the affected entries are refreshed. The raw elevation data itself is never fully resident in memory regardless (per FR-013 – FR-015).
+- Q: Elevation interpolation when sample points don't fall on DEM cell centres → A: **Bilinear interpolation only**. Elevation at any (lat, lon) is the weighted blend of the four cells whose centres bracket the point. If any of those four cells is a no-data value, the result is reported as no-data (no partial-cell interpolation, no nearest-neighbour fallback).
+- Q: How no-data samples are represented in a returned Path Profile → A: **NaN-in-place**. Every requested sample appears in the returned sequence with valid `distance`/`latitude`/`longitude`; the `elevation` field is either a metres value or `NaN` (no-data). The Path Profile additionally exposes a derived `no_data_segments` list of `(start_index, end_index)` ranges for cheap enumeration.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -88,7 +91,7 @@ A user requests a profile or a point elevation where one or both points fall out
 - **FR-006**: The module MUST accept an optional sampling parameter (sample count or sample spacing) for profile requests and apply a sensible default when none is supplied.
 - **FR-007**: The module MUST validate inputs and reject coordinates whose latitude is outside [-90, 90] or whose longitude is outside [-180, 180] with a clear error.
 - **FR-008**: The module MUST clearly distinguish "point outside loaded coverage" from a valid elevation result in its responses.
-- **FR-009**: When a profile spans regions of partial coverage, the module MUST indicate which segments lack data rather than silently substituting values.
+- **FR-009**: When a profile spans regions of partial coverage or no-data cells, every requested sample MUST still appear in the returned sequence with valid distance/latitude/longitude; the sample's elevation field MUST be `NaN` for no-data samples. The returned Path Profile MUST additionally expose a derived list of `(start_index, end_index)` ranges identifying contiguous no-data segments, so callers can enumerate gaps without scanning every sample.
 - **FR-010**: The module MUST tolerate malformed or unreadable data files by skipping them with a diagnostic, without aborting the load of the remaining files.
 - **FR-011**: Elevation values returned MUST be expressed in metres above mean sea level, consistent with the underlying source data.
 - **FR-012**: The module MUST label the two endpoints of a profile request as transmitter and receiver, and preserve that labelling in the response so callers can orient the profile (distance is measured from transmitter to receiver).
@@ -96,14 +99,17 @@ A user requests a profile or a point elevation where one or both points fall out
 - **FR-014**: The module MUST resolve any single-point or profile query by reading only the tile(s) intersected by the query; loading all registered tiles eagerly for a query is forbidden.
 - **FR-015**: The module MUST bound resident memory attributable to elevation data by a configurable working-set budget. Beyond that budget, less-recently-used tiles MUST be evicted; resident memory MUST NOT grow with total registered dataset size.
 - **FR-016**: The module MUST validate that the great-circle distance between the transmitter and receiver endpoints is between 1 km and 200 km inclusive, and reject out-of-range profile requests with a clear, typed error indicating which side of the range was violated.
+- **FR-017**: The module MUST persist its tile metadata index (paths, bounding boxes, resolutions, content fingerprints) to an on-disk sidecar after registration, in a known location associated with the registered dataset. A subsequent process pointed at the same dataset MUST load this index from disk rather than re-scanning all source files.
+- **FR-018**: The module MUST detect when source files have been added, removed, or changed since the index was last written (using file mtime, size, and/or content hash) and refresh only the affected entries on next use; the index MUST NOT silently serve queries against stale entries pointing at vanished or rewritten files.
+- **FR-019**: Elevation at any (latitude, longitude) within loaded coverage MUST be computed by bilinear interpolation of the four DEM cells whose centres bracket the point. If any of those four cells contains a no-data value, the elevation at that point MUST be reported as no-data; the module MUST NOT substitute nearest-neighbour, zero, or partial-cell values.
 
 ### Key Entities
 
-- **Elevation Store**: The collection of registered US elevation data (CONUS + supported territories), with a known coverage extent, a tile index that survives across sessions, and the ability to serve point queries against a dataset that may contain on the order of ~1,800 source tiles and tens of billions of samples without loading the full dataset into memory.
+- **Elevation Store**: The collection of registered US elevation data (CONUS + supported territories), with a known coverage extent, a tile metadata index that is persisted to an on-disk sidecar and reloaded across process restarts (with stale-entry detection by mtime/hash), and the ability to serve point queries against a dataset that may contain on the order of ~1,800 source tiles and tens of billions of samples without loading the full dataset into memory.
 - **Tile**: A single source file of elevation data covering a rectangular geographic region with a defined grid resolution.
 - **Endpoint**: A geographic point identified by latitude and longitude, labelled in profile requests as either the transmitter or the receiver.
-- **Profile Sample**: One observation along the path between two endpoints, carrying its position on the path (distance from the transmitter, latitude, longitude) and the elevation at that position or a no-data indicator.
-- **Path Profile**: The ordered series of profile samples produced for one transmitter–receiver pair, with overall metadata (total length, sample count, any partial-coverage indication).
+- **Profile Sample**: One observation along the path between two endpoints, carrying its position on the path (distance from the transmitter, latitude, longitude) and the bilinearly interpolated elevation at that position. The elevation is `NaN` when interpolation is not possible (any of the four bracketing cells is no-data or the point is outside loaded coverage); the position fields remain valid in either case.
+- **Path Profile**: The ordered series of Profile Samples produced for one transmitter–receiver pair, with overall metadata (total length, sample count, transmitter and receiver coordinates) and a derived `no_data_segments` list of `(start_index, end_index)` index ranges for contiguous runs of NaN-elevation samples.
 
 ## Success Criteria *(mandatory)*
 
@@ -116,7 +122,8 @@ A user requests a profile or a point elevation where one or both points fall out
 - **SC-005**: A developer following the quickstart can load a sample dataset and compute their first profile in under 10 minutes.
 - **SC-006**: When a profile crosses a tile boundary, sampled elevations on either side of the seam differ by no more than the natural terrain variation between the two adjacent samples; the storage layer introduces no visible discontinuity.
 - **SC-007**: With the full target dataset registered (~1,756 NED files, ~23 billion samples), the module's resident memory attributable to elevation tiles stays within the configured working-set budget and does not grow with the size of the registered dataset.
-- **SC-008**: Registering the full target dataset (~1,756 NED files) completes in under 5 minutes on a typical developer workstation and produces an index that supports subsequent point/profile queries without re-scanning all source files.
+- **SC-008**: Registering the full target dataset (~1,756 NED files) completes in under 5 minutes on a typical developer workstation and writes a persistent on-disk index sidecar that supports subsequent point/profile queries without re-scanning all source files.
+- **SC-009**: A second process pointed at a previously registered dataset reaches a query-ready state in under 5 seconds on a typical developer workstation when no source files have changed since the last registration.
 
 ## Assumptions
 

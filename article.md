@@ -4,205 +4,75 @@
 
 ---
 
-Specification-Driven Development is one of the better ideas to emerge from the
-current AI coding wave. Instead of jumping straight from a vague prompt to generated
-code, SDD forces the developer and the coding agent to first produce structured
-specifications, clarify requirements, define acceptance criteria, and create an
-implementation plan. That is valuable.
-
-But we should be careful not to confuse better prompting discipline with fully
-autonomous software development.
-
-At execution time, even the most sophisticated SDD workflow still becomes model
-context. The specification, plan, constraints, guard-rails, and task breakdowns are
-eventually passed to the LLM and interpreted by the model. SDD improves the quality
-of that context. It does not remove the model's limitations.
-
-This is similar to why chain-of-thought-style decomposition often helps. A detailed,
-structured intermediate representation usually produces better results than a vague
-one. But it does not magically give the model architectural judgment, domain
-understanding, library selection discipline, or long-horizon engineering reliability.
-
-The holy grail every business is seeking is fully autonomous software development.
-The models at this time are not at that level, even with better upfront planning and
-frameworks like SDD.
-
-To be clear, I am not dismissing SDD. Quite the opposite. I plan to keep using
-Spec Kit and similar frameworks in future projects. They reduce boilerplate prompting,
-impose structure on vibe coding, and make AI-assisted development more disciplined.
-
-But my experiment showed the boundary clearly. I tried using SDD for a real-world
-feature with GitHub Spec Kit v0.8.9 and Claude Code using Claude Opus 4.7. The result
-was impressive in many ways. The generated structure was useful. The implementation
-flow was better than plain prompting. But as I suspected, it failed in selecting the
-correct libraries and frameworks to use.
-
-The experiment also gives empirical grounding to this article: fully autonomous
-development with SDD, as of now, does not work optimally for all projects.
+Specification-Driven Development is one of the better ideas to emerge from the current AI coding wave.
+Instead of jumping straight from a vague prompt to generated code, SDD forces the developer and the coding agent to first produce structured specifications, clarify requirements, define acceptance criteria, and create an implementation plan.That is valuable.
+But we should be careful not to confuse better prompting discipline with fully autonomous software development.
+At execution time, even the most sophisticated SDD workflow still becomes model context. The specification, plan, constraints, guardrails, and task breakdowns are eventually passed to the LLM and interpreted by the model. SDD improves the quality of that context. It does not remove the model's limitations.
+This is similar to why chain-of-thought-style decomposition often helps. A detailed, structured intermediate representation usually produces better results than a vague one. But it does not magically give the model architectural judgment, domain understanding, library selection discipline, or long-horizon engineering reliability.
+The holy grail every business is seeking is fully autonomous software development. The models at this time are not at that level, even with better upfront planning and frameworks like SDD.
+To be clear, I am not dismissing SDD. Quite the opposite. I plan to keep using Spec Kit or similar frameworks in future projects. They reduce boilerplate prompting, impose structure on vibe coding, and make AI-assisted development more disciplined.
+But my experiment showed the boundary clearly.
+I tried using SDD for a real-world feature with GitHub Spec Kit v0.8.9 and Claude Code using Claude Opus 4.7. The result was impressive in many ways. The generated structure was useful. The implementation flow was better than plain prompting. But as I suspected, it failed in selecting the correct libraries and frameworks to use.
+The experiment also gives empirical grounding to this article: fully autonomous development with SDD as of now does not work optimally for all projects.
 
 ---
 
 ## Background: Who Is Writing This
 
-I have been a professional programmer and software engineer for over 20 years,
-working across C++, Java, Scala, Python, Go, and more frameworks and paradigms than
-I can count. I have written software for telecom network management, optimization,
-and frequency planning — domains where correctness, scale, performance, and
-maintainability are not optional.
-
-So when people with limited real-world experience show up declaring that specs are the
-silver bullet for software development, my mind immediately goes back to
-*The Mythical Man-Month*.
-
-This is a 40-year-old book. Very few read it now, but it has deep meaning still.
-Fred Brooks wrote:
-
-> "The complexity of software is an essential property, not an accidental one. Hence
-> descriptions of a software entity that abstract away its complexity often abstract
-> away its essence."
-
-In essence: a specification, if abstracted, will abstract away the essence. Or in
-short: **code remains the ultimate specification**, since a specification can never be
-as detailed as the code itself. It is a loose abstraction.
-
-From the same chapter:
-
-> "I believe the hard part of building software to be the specification, design, and
-> testing of this conceptual construct, not the labor of representing it … We still
-> make syntax errors, to be sure; but they are fuzz compared with the conceptual
-> errors in most systems. If this is true, building software will always be hard.
-> There is inherently no silver bullet."
->
-> — Fred Brooks, [No Silver Bullet](http://sunnyday.mit.edu/16.355/BrooksNoSilverBullet2.html)
-
-There are no silver bullets in software development. This was true 40 years ago; it
-is true now with AI-driven development. Instead of *Mythical Man-Month*, one could
-write *Mythical AI Speedup* and be pretty close to the truth.
-
 ---
 
-When I started my career, Rational Rose was one of the most hyped tools on the
-market. UML was treated as the silver bullet of its decade: draw boxes, arrows, and
-diagrams, and the tool would magically turn them into working code. I was skeptical
-then, and I never bought into the idea that diagrams alone could replace engineering
-judgment. The hype eventually faded as the industry learned the same lesson.
+I have been a professional programmer and software engineer for over 20 years, working across C++, Java, Scala, Python, Go, and more frameworks and paradigms than I can count.
+I have written software for telecom network management, optimization, and frequency planning - domains where correctness, scale, performance, and maintainability are not optional.
+So when people with limited real-world experience show up declaring that "specs" are the silver bullet for software development, my mind immediately goes back to The Mythical Man-Month. This is a 40 year old book, very few read it now, but it has deep meaning even now.
+Fred Brooks wrote "The complexity of software is an essential property, not an accidental one. Hence descriptions of a software entity that abstract away its complexity often abstract away its essence"
+In essence it means that Specification if abstracted will abstract away the essence or in short Code remains the ultimate specification,as specification can never be as detailed as the code and is essentially a loose abstraction. I will expand on this later.
+From the same chapter -"I believe the hard part of building software to be the specification, design, and testing of this conceptual construct, not the labor of representing it …We still make syntax errors, to be sure; but they are fuzz compared with the conceptual errors in most systems.If this is true, building software will always be hard. There is inherently no silver bullet." 
+http://sunnyday.mit.edu/16.355/BrooksNoSilverBullet2.html
+There are no silver bullets in software development. This was true 40 years back, this was true even now with AI driven Development. Instead of Mythical Man Month, one could write Mythical AI Speedup and be still pretty close to the truth.
 
-When the current excitement around Specification-Driven Development started, I had a
-familiar reaction. However, SDD has revived a lot of best practices that were
-generally left for dead — upfront analysis, planning, design, Test-First / Test-Driven
-Development. That part is genuinely good.
+When I started my career, Rational Rose was one of the most hyped tools in the market. UML was treated as the silver bullet of its decade: draw boxes, arrows, and diagrams, and the tool would magically turn them into working code.
+I was skeptical then, and I never bought into the idea that diagrams alone could replace engineering judgment. The hype eventually faded as the industry learned the same lesson.
+So when the current excitement around Specification-Driven Development started, I had a familiar reaction. 
+However SDD has revived a lot of best practices that were generally left for dead by the general community - upfront Analysis, Planning Design, Test-First/Driven Development.
 
----
-
-## SDD in the Context of AI-Native SDLC
 
 ### What is SDLC, Really?
 
-SDLC was an acronym long absent from most modern programmers' vocabularies —
-associated more with Waterfall methodology than anything else. Amazon's AI-focused
-IDE Kiro brought it back into circulation, reframing it as the backbone of an
-"AI-native SDLC" (or AIDLC).
-
+SDLC was an acronym long absent from most modern programmers vocabularies - associated more with Waterfall methodology than anything else.
+Amazon's AI-focused IDE Kiro brought it back into circulation, re-framing it as the backbone of an "AI-native SDLC or AIDLC"
 What it describes, at its core, is the Analyze → Design → Implement cycle
-([Wikipedia: Systems development life cycle](https://en.wikipedia.org/wiki/Systems_development_life_cycle)).
 
-People mistakenly think SDLC means Waterfall. Iterative methodologies like Scrum and
-Agile follow exactly the same phases — the scope is simply limited to a subset of the
-feature list, usually one Feature at a time, broken down into User Stories and Tasks,
-with automated CI/CD pipelines in almost all modern organisations. Dismissing SDLC or
-associating it with all the old problems of Waterfall is not correct.
+![Wikipedia: Systems development life cycle](Systems_development_life_cycle.svg.png)
+People mistakenly think SDLC means Waterfall. Iterative methodologies like Scrum and Agile follow exactly the same phases - but the scope is simply limited to a subset of the feature list, usually one Feature at a time - a smaller subset called User Stories and Tasks and we have automated pipelines for CI and CD now in almost all modern software development organizations. So dismissing it or associating it with all the old problems of Waterfall model are not correct.
+If you use SDD to develop an entire product or large feature - an Epic in Scrum parlance - and give it a prompt like "I want to build a new database system", the scope is large, the artefacts generated are enormous, and the task list is huge.There is some sense in this criticism if used in this way.
+If the entire project is specified in one go it is impossible for a human to process so much cognitive load in one shot, or even across a few days.
+The result is that the specifier eventually gives up and becomes like an overworked clerk blindly signing documents, pressing "Yes" or "OK - Continue" in the SDD-driven agentic loop.
+However SDD can be done for a smaller feature subset as well and I guess that is the better way to do it. 
+Another push back against SDD is that AI models are non-deterministic, so a specification can be interpreted differently by different models or the same model at different times.
+This is not a major problem in practice. SDD frameworks act as structured prompts, and modern models produce highly consistent outputs when guided by them.
 
-## Some Common Objections to SDD — Not the Real Problems
-
-### 1. SDD follows the old Waterfall way of overspecified upfront design
-
-If you use SDD to develop an entire product or large feature — an Epic in Scrum
-parlance — and give it a prompt like "I want to build a new database system", the
-scope is large, the artefacts generated are enormous, and the task list is huge.
-There is some sense to this criticism when SDD is used at that scale.
-
-If the entire project is specified in one go, it is impossible for a human to process
-so much cognitive load in one shot, or even across a few days. The result is that the
-specifier eventually gives up and becomes like an overworked clerk blindly signing
-documents, pressing "Yes" or "OK — Continue" in the SDD-driven agentic loop.
-
-However, SDD can be done for a smaller feature subset, and that is the better way to
-use it.
-
-### 2. AI models are non-deterministic
-
-Another pushback against SDD is that AI models are non-deterministic, so a
-specification can be interpreted differently by different models or the same model at
-different times.
-
-This is not a major problem in practice. SDD frameworks act as structured prompts,
-and modern models produce highly consistent outputs when guided by them.
-
----
 
 ### The Real Problem: Why Code Becomes the Source of Truth — and Why That Is a Good Thing
+Good design and algorithmic ideas are crafted while coding.
+Good design and algorithmic ideas are crafted while coding.
+This is a simple truth evident to all those who code and ship complex product and not evident to all those who don't.
+This is the reason why the initial analysis and design specification gets outdated and code becomes the source of truth. SDD tries to invert that by inverting the role of the specification and the code. 
+SDD tries to invert that by inverting the role of the specification and the code.It's fundamental thesis is that it is possible to specify good design upfront without tinkering with the code and some prototyping, and it is fundamentally wrong.
+The counter to this argument is the strength of the coding generating AI Model. That models are powerful enough to "craft" the best design and library and framework decisions.
+With strict SDD this becomes more of a problem for even very capable models, as it tries to follow strictly the specification which has holes or inaccuracies in it and actually generates a worse code than usual.
+This is like a Catch 22 situation. The specification has to be very rigorous in the first place, but for that it needs to be iteratively modified with the generated code.
 
-Good design and algorithmic ideas are crafted while coding. This is a simple truth
-evident to everyone who has written and shipped complex software — and not obvious to
-those who have not.
+![catch22](catch22.png)
 
-This is why the initial analysis and design specification inevitably gets outdated and
-code becomes the source of truth. SDD tries to invert that relationship. Its
-fundamental thesis is that it is possible to specify good design upfront without
-tinkering with the code and without rounds of prototyping and refactoring. That thesis
-is fundamentally wrong.
-
-The counter-argument is the strength of the code-generating model: that models are
-powerful enough to "craft" the best design, library, and framework decisions. But with
-strict SDD, this becomes more of a problem even for very capable models — the
-framework tries to follow the specification strictly, and the specification has holes
-or inaccuracies, resulting in code that is worse than what plain prompting would
-produce.
-
-This is a Catch-22. The specification has to be very rigorous in the first place, but
-to become rigorous it needs to be iteratively refined alongside the generated code.
-
-In the case of fully autonomous coding, the LLM does autoregressive generation of
-code and design just as it writes out a poem. No refactoring or rework. We just have
-to hope the prompt or specification is good enough. The amount of code generated is
-so rapid and large that it is impossible to manually review or refactor.
-
-Fully autonomous coding is good for Rapid Prototyping or Proof of Concept — but not
-for Production.
-
-For a more systematic treatment, see Deepak Babu Piskala's paper *Spec-Driven
-Development: From Code to Contract in the Age of AI Coding Assistants*
-(<https://arxiv.org/html/2602.00180v1>), which identifies similar failure modes from
-a formal analysis perspective.
-
----
+In the case of fully Autonomous Codiing, the LLM does autoregressive generation of code and design just like it write out a poem. No refactoring or rework. We just have to pray the prompt or specification is good enough. The amount of code generated is so quick and large that it is impossible to manually review or refactor the same.
+Fully autonomous coding is good for Rapid Prototyping or Proof of Concept -but not for Production.
 
 ## Part 2: An End-to-End Experiment to Test the SDD Thesis
 
-To prove this drawback I decided to run an end-to-end experiment with Speckit — a
-very popular SDD framework. The result should be the same with OpenSpec, BMAD, or
-similar frameworks.
-
-I ran this on a feature that I had worked on before. This is a complex feature to be
-fair, and I wanted to check if the SDD flow would surface the same or similar
-architecture that I finally implemented.
-
-The counter to this experiment is that people may say I needed to specify the
-architecture and technical details upfront in the plan or specification phase.
-
-The problem is that even in real-world feature implementations, when I did the feature
-analysis and design I did not think about this exact architecture or stack. Only during
-implementation did it emerge. For features where I played a Software Architecture role,
-even then many such architectural choices only emerged during the prototyping phase.
-It is not possible to think this through entirely upfront.
-
-If the model and coding agent did this sort of refactoring and restructuring it might
-still arrive at a similar design choice. But that is not how the LLM works. It
-autoregressively emits the code and, as long as the test cases and guard-rails pass,
-it does not come back to restructure or refactor.
-
-> For the concrete experiment this article is based on, see the project at
-> <https://github.com/alexcpn/speckit_test>
+To test this limitation concretely, I ran an end-to-end experiment using Spec Kit, a popular Specification-Driven Development framework.
+I used Spec Kit for the experiment, but I do not think the result is specific to Spec Kit alone. I would expect a similar pattern with OpenSpec, BMAD, or any comparable framework that moves from specification to implementation through an AI coding agent.
+The feature I chose was realistic and non-trivial: a Python module for working with US elevation data across USGS 3DEP/NED tiles. I had worked on this problem before, so I already knew the kind of architecture that eventually emerged from real implementation.
+The goal was simple: would an SDD flow surface a similar architecture on its own?
 
 ---
 

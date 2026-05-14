@@ -32,34 +32,33 @@ In short: the holy grail every business is seeking is fully autonomous software
 development. The models at this time are not at that level, even with better upfront
 planning and frameworks like SDD.
 
-Read on if you are still interested.
+To be clear: what these frameworks do is genuinely good. I'm going to keep using Speckit and s
+imilar in future projects — they cut out the boilerplate prompting and impose real structure on 
+vibe coding. Nothing wrong with that.
 
----
+The problem deep down is not Speckit. **It is the decision one makes between fully
+autonomous or semi-autonomous developmentand how far we can depend on the model for the Specificaion and 
+the code generation.**
+
+> **From experience, I believe it is better to do the core of analysis, design, and
+> structure yourself and use AI only to fill in the gaps. But we need to prove this empirically.**
+
+I did an experiment of fully autonomous software development with a LLM-powered code generation tool called Speckit on a real feature thatI had worked on and which is non proprietary.
+
+I used the latest version of Speckit (v) and latest Claude Code and Model (claude opus 4.7) - the best available models and coding agent at this time.
+
+I wanted to see how well it did at generating code for a real-world feature. It did well, but as I suspected failed in selecting the correct libraries and frameworks to use.
+
+> **From expiriment also it is empirically proven that fully autonomous development is not always better than semi-autonomous development.**
+
 
 ## Background: Who Is Writing This
 
-To set the context: I have been using these tools right from the ChatGPT release —
-first as a chat assistant and Google Search / StackOverflow replacement, then through
-the coding-assistant generation of Copilot, Google Gemini (Antigravity), Cursor, and
-Claude Code. IDEs for semi-autonomous software development, Claude Code for fully
-autonomous.
-
 I have been a professional programmer and software engineer for over 20 years,
 working from C++ to Python through a hundred frameworks and paradigms that were each,
-in their day, *the* hype: Object Oriented, Distributed Objects (Microsoft COM),
-remote procedural invocation (CORBA), Service Oriented Architecture (SOAP), SEDA
-(Apache Camel), Message-Driven Architecture (JMS, ActiveMQ), Microservices (Docker,
-Kubernetes), gRPC, SQL, NoSQL — you name it. Hundreds of thousands of lines of code
-written and deployed.
+in their day, *the* hype writing programs for telecom network management, optimistation and frequency planning.
 
-Not that I'm a dinosaur yet. I've embraced Generative AI in my work and used it
-extensively in semi-autonomous mode on my last project, and Claude Code in fully
-autonomous mode (with various guardrails — all English instructions, in the end) on
-several hobby projects.
-
-At best I am an average programmer. But when people who have never written a line of
-code show up with the recommendation that Specs are the silver bullet, my mind races
-back to *The Mythical Man-Month* — **there are no silver bullets in software
+When people who has very little real life experienceshow up with the recommendation that Specs are the silver bullet, my mind races back to *The Mythical Man-Month* — **there are no silver bullets in software
 development**.
 
 When I started, Rational Rose was the most hyped product on the market and UML was
@@ -68,171 +67,93 @@ convert them into code. I knew it was a fad and never used the tool or the diagr
 Fortunately it died out very fast as others figured it out too.
 
 When the current hype over specification-driven development started, I was thinking
-the same thing. Dead things are walking again. Test-First Development, TDD, and BDD —
-the irony today is that the same crowd that pushed back when *they* had to write the
-tests now mandates them when it's a prompt instructing the poor LLM to do it ("or I
-am going to never ever MERGE your PR!" — I have seen prompts like this meant for
-agents in real repositories).
+the same thing. Those that were left for dead by the general community are walking again.
+Test-First Development, TDD, and BDD. It is good that  good practices like
+TDD are finally getting the place in the Sun.
 
-So here is an experiment. To be clear: what these frameworks do is genuinely good.
-I'm going to keep using Speckit and similar in future projects — they cut out the
-boilerplate prompting and impose real structure on vibe coding. Nothing wrong with
-that. The problem is when this lands in the hands of people who think it is *the
-answer* to Generative AI in software development.
-
-The problem deep down is not Speckit. **It is the decision one makes between fully
-autonomous or semi-autonomous development.**
-
-> **From experience, I believe it is better to do the core of analysis, design, and
-> structure yourself and use AI only to fill in the gaps.**
-
-I remember, long back, that I always did better when I resisted the urge to start
-implementing immediately — when I'd walk out of the workplace, look down the window,
-and plan, and plan, and then come back and code very little.
-
-Somehow, even with all the upfront planning Speckit and similar frameworks provide,
-the planning and thought and exploration — and the resulting gems of design, ideas,
-and craft that used to take weeks and months — compress down to a few minutes or
-hours. There is no design finesse, no beauty in the design. It is straight surgical
-code written to implement the user story.
-
-The problem is that certain key elements of system design — the ones that set a
-product apart, or give it high reliability, performance, scalability, or easy
-debugging — are not there. This is okay for a lot of software work. It is usually
-not okay when you are delivering a *software product* (as opposed to internal or
-glue software): telecom management systems, analysis systems, flight-control
-systems, real-time systems.
-
-All this is rant — one person's view among a thousand louder, more polished voices.
-
-It is strange that people will hope for and believe in anything that seems like it
-could solve their problems. This is the hype cycle, until they get disillusioned and
-reject everything — even the good parts.
-
-Speckit, OpenSpec, `obra/superpowers`, and many others like them are great. But none
-of them is the one silver bullet that is going to solve all your problems. None of
-them, at least the open-source ones, claim to be. It is essential to stay grounded.
-
-Tomorrow, if AGI is released, all that I wrote here will be obsolete. But until then,
-there is a goal, a personality, a hidden artist in all good programmers that is not
-in even the latest AI models. That one deficiency makes fully autonomous software
-development a sub-par alternative to what a motivated human programmer can do.
-
-Until then.
-
----
-
-## I. Introduction & Context: The AI-Native SDLC
+## SDD in the context of  AI-Native SDLC
 
 ### What is SDLC, Really?
 
 SDLC was an acronym long absent from most programmers' vocabularies — associated more
 with Waterfall methodology than anything modern. Amazon's AI-focused IDE Kiro brought
-it back into circulation, re-framing it as the backbone of an "AI-native SDLC."
+it back into circulation, re-framing it as the backbone of an "AI-native SDLC or **AIDLC**"
 
 What it describes, at its core, is the Analyze → Design → Implement cycle
 ([Wikipedia: Systems development life cycle](https://en.wikipedia.org/wiki/Systems_development_life_cycle)).
 
-People mistakenly think SDLC means Waterfall. Iterative methodologies like Scrum and
-Agile follow exactly the same phases — the scope is simply limited to a subset of the
-feature list, usually one Feature at a time or a subset called User Stories and Tasks.
-
-> **Pay attention to the word *upfront*. It is the key to everything that follows.**
-
 ### Why SDD Gets Compared to Waterfall
+
+People mistakenly think SDLC means Waterfall. Iterative methodologies like Scrum and
+Agile follow exactly the same phases — but the scope is simply limited to a subset of the
+feature list, usually one Feature at a time - a smaller subset called User Stories and Tasks and we have automated 
+pipelines for CI and CD now in almost all modern software development organizations.
+
+# Some Common Objections to SDD which are not major problems 
+
+## 1. SDD is following the old Waterfall way of upfront overspecifed desing and requirements
 
 If you use SDD to develop an entire product or large feature — an Epic in Scrum
 parlance — and give it a prompt like "I want to build a new database system", the
 scope is large, the artefacts generated are enormous, and the task list is huge.
+
+There is some sense in this criticism, but rather than overspecifying what really happens is that the specifier has very less role in this  process. True a lot of artifacts gets created, but the specifier is not responsible for them.
 
 SDD frameworks prompt the LLM to "research/plan" each task and prompt the user to
 "clarify/review" the output. This means the entire project is specified in one go.
 Here is the fundamental problem: it is impossible for a human to process so much
 cognitive load in one shot, or even across a few days.
 
-The result is that the specifier eventually gives up and becomes an overworked clerk
+The result is that the specifier eventually gives up and becomes like an overworked clerk
 blindly signing documents, pressing "Yes" or "OK — Continue" in the SDD-driven
 agentic loop.
 
-The prompts in SDD frameworks do split work into smaller features, and nothing
-prevents an agent-human pair from working on these iteratively, using CI/CD practices
-to turn it into genuine iterative development. But this requires active resistance to
-the "specify everything now" default.
+The retort to this objection is that **SDD can be done for a smaller feature subset as well and I guess that is the better way to do it.** so that cognitive load is spread out over time and the specifier can focus on the smaller subset.
 
-### Does AI Eliminate Waterfall's Core Problem?
+### Dismissing the Non-Determinism Objection to SDD
 
-Waterfall's shortcomings are well documented: by the time the entire feature set is
-developed and released, the final big-bang integration may break, the scope may have
-shifted, or the requirements may have meant something different from what was
-implemented.
-
-With AI parallel agents and features like git worktree support — where parallel agents
-work on isolated copies of the codebase simultaneously, unlike sequential git branches
-— the core time problem of Waterfall becomes largely irrelevant. Code that once took
-months can be generated in hours.
-
-Tokens wasted on wrong requirements are the new iteration cost. Assuming code
-generation stays cheap — is AI Waterfall still a problem?
-
-Yes. The question is: **who verifies the requirements?** If the same AI that
-interpreted them also verifies them, the failure lands on the final user.
-Requirements verification is still a human responsibility. So even in an
-AI-Waterfall, you need a human in the loop — and you need them to be doing real
-verification, not just pressing Continue.
-
-### Dismissing the Non-Determinism Objection
-
-The usual pushback against SDD is that AI models are non-deterministic, so a
+Another pushback against SDD is that AI models are non-deterministic, so a
 specification can be interpreted differently by different models or the same model at
 different times.
 
 This is not a major problem in practice. SDD frameworks act as structured prompts,
 and modern models produce highly consistent outputs when guided by them.
 
-Both AI and humans interpret requirements when creating specifications, and both can
-get them wrong or leave them underspecified. Maybe AGI will solve this. Current AI,
-and the SDD frameworks built on top of it, do not. Models still need human guidance
-for any non-trivial software system.
+### The Real Problem - Why Code becomes the Source of Truth and why that is a Good Thing
 
-### The Real Dilemma
+Somehow, even with all the upfront planning Speckit and similar frameworks provide,good design and algorithmic ideas are crafted while coding.
 
-Even in iterative development, most platform and architectural choices must be made
-well in advance. If you defer a performance or scalability requirement to the last
-sprint, you cannot change the stack at that point. **Architecture is not a
-late-game feature.**
+This is the reason why the intial analysis and design specification gets outdated and code becomes the source of truth.
 
-The true problem is not the SDD framework itself. It is the decision to use it for
-*fully autonomous* development rather than as a *semi-autonomous* assistant with a
-human architect in the loop.
+SDD tries to invert that by inverting the role of the design spec and the code.
 
----
+**Its fundamental thesis is that it is possible to specify good desing upfront without tinkering with the code amd some rounds of refactoring.**
 
-## II. The Core Argument: Implicit Assumptions and Fragile Foundations
+Anyone who has written complex software knows that this is NEVER the case. 
 
-### The Assumption Trap
+You write the code, you write the test, you think a bit,go out, stop the work, come back, re-structure a bit, refactor again and again and somewherein this itreative process you form good system design, class or interface desing and implementation. With AI aid, you invoke the AI in this process and use its help also, but you steer the design process yourself.
 
-SDD frameworks generate impressive-looking specifications. Even though they ask the
-user for clarifications, many critical implicit assumptions slip through without the
-user realising it. The artefact looks complete — every template slot is filled, every
-checklist box is green. But the engineering question is not answered.
+In the case of fully Autonomous Codiing, the LLM does autoregressive generation of code and design just like it write out a poem. No refactoring or rework. We just have to pray the prompt or specification is good enough. The amount of code generated is so quick and large that it is impossible to manually review or refactor the same.
 
-The agent silently converts ambiguity into "assumptions" just to satisfy its
-completion criteria. In the experiment below, the AI initially assumed a hobby-scale
-dataset. The actual requirement was 23 billion data points across ~1,756 files
-totalling ≈ 180 GB — a completely different architectural problem.
+I have done both ways and like many I am thinking that fully autonomous coding is good for Rapid Prototyping or Proof of Concept.But not for Production.
 
-### The Toy Project Threshold
+Here are some pifalls from the paper Spec-Driven Development: From Code to Contract in the Age of AI Coding Assistants by  Deepak Babu Piskala
 
-Any software beyond a simple toy project requires a solid technical stack and robust
-libraries to handle non-functional requirements: reliability, high performance,
-scalability. SDD frameworks often fail to build this solid base because of how their
-rules operate.
+https://arxiv.org/html/2602.00180v1
 
-The key mechanism is the **dependency tax**. Constitution rules that require
-justification for every new dependency make the stdlib option structurally cheaper,
-not technically better. The agent defaults to what is easiest to justify, not what
-fits the problem. This is the direct path from "reasonable constitution" to
-"sub-optimal architecture."
+
+# Part 2: An End-to-End expiriment  to test the SDD thesis
+
+To prove this real drawback I decided to run an end-to-end experiment with Speckit - a very popular SDD framework.
+The reuslt should be the same with OpenSpec or BMad or similar frameworks.
+
+I ran this on a feature that I had worked before. This is a complex feature to be fair,and I wanted to check if the SDD flow will help bring out the same or similar architecture that I fially implemented.
+
+The counter to this experiment is that people may say that I needed to specify the architecture and technical details upfront in the plan or specification phase.
+
+The problem is that even in the real world feature implementations, when I did the feature analysis and design I did not think about this exact architecture or stack. Only during implemetation did this emerge. For features where I do a Software Architecture role, even then only during the feature prototyping phase do many such architectural choices emerge. It is not possible to think this upfront during writing
+
+If the Model and Coding Agent does this sort of refactoring and re structuring it may still come up with a similar design choise. But unfortunately that is not the way the LLM works. It autoregressively emits the code and as long as the test case and guard rails pass it does not come back and restructure or refactor the code.
 
 > For the concrete experiment this article is based on, see the project at
 > <https://github.com/alexcpn/speckit_test>
@@ -241,7 +162,6 @@ A specification produced by an agent must be reviewed by an engineer willing to
 discard the agent's safe architectural choices. Without that review, the framework
 delivers a polished local optimum and calls it done.
 
----
 
 ## III. The Experiment: Speckit End-to-End
 

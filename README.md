@@ -1,90 +1,186 @@
-# Over-reliance on Specification: A Speckit Experiment
+# Why Specification-Driven Development (SDD) is Not a Silver Bullet for AI-Assisted SDLC
 
-There is no holding back Generative AI in coding. It is a really powerful tool.
+*Using a popular SDD framework and a concrete example*
 
-To set the context: I have been using these tools right from the ChatGPT release —
-first as a chat assistant and Google Search / StackOverflow replacement, then through
-the coding-assistant generation of Copilot, Google Gemini (Antigravity), Cursor, and
-Claude Code. IDEs for semi-autonomous software development, Claude Code for fully
-autonomous.
+---
 
-I have been a professional programmer and software engineer for over 20 years,
-working from C++ to Python through a hundred frameworks and paradigms that were each,
-in their day, *the* hype: Object Oriented, Distributed Objects (Microsoft COM),
-remote procedural invocation (CORBA), Service Oriented Architecture (SOAP), SEDA
-(Apache Camel), Message-Driven Architecture (JMS, ActiveMQ), Microservices (Docker,
-Kubernetes), gRPC, SQL, NoSQL — you name it. Hundreds of thousands of lines of code
-written and deployed.
+Specification-Driven Development is one of the better ideas to emerge from the
+current AI coding wave. Instead of jumping straight from a vague prompt to generated
+code, SDD forces the developer and the coding agent to first produce structured
+specifications, clarify requirements, define acceptance criteria, and create an
+implementation plan. That is valuable.
 
-Not that I'm a dinosaur yet. I've embraced Generative AI in my work and used it
-extensively in semi-autonomous mode on my last project, and Claude Code in fully
-autonomous mode (with various guardrails — all English instructions, in the end) on
-several hobby projects.
+But we should be careful not to confuse better prompting discipline with fully
+autonomous software development.
 
-At best I am an average programmer. But when people who have never written a line of
-code show up with the recommendation that Specs are the silver bullet, my mind races
-back to *The Mythical Man-Month* — **there are no silver bullets in software
-development**.
+At execution time, even the most sophisticated SDD workflow still becomes model
+context. The specification, plan, constraints, guardrails, and task breakdowns are
+eventually passed to the LLM and interpreted by the model. SDD improves the quality
+of that context. It does not remove the model's limitations.
 
-When I started, Rational Rose was the most hyped product on the market and UML was
-the silver bullet of its decade: draw rectangular squiggly diagrams and Rose will
-convert them into code. I knew it was a fad and never used the tool or the diagrams.
-Fortunately it died out very fast as others figured it out too.
+This is similar to why chain-of-thought-style decomposition often helps. A detailed,
+structured intermediate representation usually produces better results than a vague
+one. But it does not magically give the model architectural judgment, domain
+understanding, library selection discipline, or long-horizon engineering reliability.
 
-When the current hype over specification-driven development started, I was thinking
-the same thing. Dead things are walking again. Test-First Development, TDD, and BDD —
-the irony today is that the same crowd that pushed back when *they* had to write the
-tests now mandates them when it's a prompt instructing the poor LLM to do it ("or I
-am going to never ever MERGE your PR!" — I have seen prompts like this meant for
-agents in real repositories).
+The holy grail every business is seeking is fully autonomous software development.
+The models at this time are not at that level, even with better upfront planning and
+frameworks like SDD.
 
-So here is an experiment. To be clear: what these frameworks do is genuinely good.
-I'm going to keep using Speckit and similar in future projects — they cut out the
-boilerplate prompting and impose real structure on vibe coding. Nothing wrong with
-that. The problem is when this lands in the hands of people who think it is *the
-answer* to Generative AI in software development.
+To be clear, I am not dismissing SDD. Quite the opposite. I plan to keep using
+Spec Kit or similar frameworks in future projects. They reduce boilerplate prompting,
+impose structure on vibe coding, and make AI-assisted development more disciplined.
 
-The problem deep down is not Speckit. **It is the decision one makes between fully
-autonomous or semi-autonomous development.**
+But my experiment showed the boundary clearly. I tried using SDD for a real-world
+feature with GitHub Spec Kit v0.8.9 and Claude Code using Claude Opus 4.7. The result
+was impressive in many ways. The generated structure was useful. The implementation
+flow was better than plain prompting. But as I suspected, it failed in selecting the
+correct libraries and frameworks to use.
 
-> **From experience, I believe it is better to do the core of analysis, design, and
-> structure yourself and use AI only to fill in the gaps.**
+The experiment also gives empirical grounding to this article: fully autonomous
+development with SDD as of now does not work optimally for all projects.
 
-I remember, long back, that I always did better when I resisted the urge to start
-implementing immediately — when I'd walk out of the workplace, look down the window,
-and plan, and plan, and then come back and code very little.
+---
 
-Somehow, even with all the upfront planning Speckit and similar frameworks provide,
-the planning and thought and exploration — and the resulting gems of design, ideas,
-and craft that used to take weeks and months — compress down to a few minutes or
-hours. There is no design finesse, no beauty in the design. It is straight surgical
-code written to implement the user story.
+## Background: Who Is Writing This
 
-The problem is that certain key elements of system design — the ones that set a
-product apart, or give it high reliability, performance, scalability, or easy
-debugging — are not there. This is okay for a lot of software work. It is usually
-not okay when you are delivering a *software product* (as opposed to internal or
-glue software): telecom management systems, analysis systems, flight-control
-systems, real-time systems.
+I have been a professional programmer and software engineer for over 20 years, working
+across C++, Java, Scala, Python, Go, and more frameworks and paradigms than I can
+count. I have written software for telecom network management, optimization, and
+frequency planning — domains where correctness, scale, performance, and
+maintainability are not optional.
 
-All this is rant — one person's view among a thousand louder, more polished voices.
+So when people with limited real-world experience show up declaring that specs are the
+silver bullet for software development, my mind immediately goes back to
+*The Mythical Man-Month*. This is a 40-year-old book. Very few read it now, but it
+has deep meaning still.
 
-So to get some credibility back, here is what the experiment actually showed.
+Fred Brooks wrote:
 
-It is strange that people will hope for and believe in anything that seems like it
-could solve their problems. This is the hype cycle, until they get disillusioned and
-reject everything — even the good parts.
+> "The complexity of software is an essential property, not an accidental one. Hence
+> descriptions of a software entity that abstract away its complexity often abstract
+> away its essence."
 
-Speckit, OpenSpec, `obra/superpowers`, and many others like them are great. But none
-of them is the one silver bullet that is going to solve all your problems. None of
-them, at least the open-source ones, claim to be. It is essential to stay grounded.
+In essence: a specification, if abstracted, will abstract away the essence. Code
+remains the ultimate specification — a specification can never be as detailed as the
+code itself. It is essentially a loose abstraction.
 
-Tomorrow, if AGI is released, all that I wrote here will be obsolete. But until then,
-there is a goal, a personality, a hidden artist in all good programmers that is not
-in even the latest AI models. That one deficiency makes fully autonomous SW
-development a sub-par alternative to what a motivated human programmer can do.
+From the same chapter:
 
-Until then.
+> "I believe the hard part of building software to be the specification, design, and
+> testing of this conceptual construct, not the labor of representing it … We still
+> make syntax errors, to be sure; but they are fuzz compared with the conceptual
+> errors in most systems. If this is true, building software will always be hard.
+> There is inherently no silver bullet."
+>
+> — Fred Brooks, [No Silver Bullet](http://sunnyday.mit.edu/16.355/BrooksNoSilverBullet2.html)
+
+There are no silver bullets in software development. This was true 40 years ago; it
+is true now with AI-driven development. Instead of *Mythical Man-Month*, one could
+write *Mythical AI Speedup* and be pretty close to the truth.
+
+When I started my career, Rational Rose was one of the most hyped tools in the
+market. UML was treated as the silver bullet of its decade: draw boxes, arrows, and
+diagrams, and the tool would magically turn them into working code. I was skeptical
+then, and I never bought into the idea that diagrams alone could replace engineering
+judgment. The hype eventually faded as the industry learned the same lesson.
+
+When the current excitement around Specification-Driven Development started, I had a
+familiar reaction. However, SDD has revived a lot of best practices that were
+generally left for dead — upfront analysis, planning, design, Test-First /
+Test-Driven Development. That part is genuinely good.
+
+---
+
+## SDD in the Context of AI-Native SDLC
+
+### What is SDLC, Really?
+
+SDLC was an acronym long absent from most modern programmers' vocabularies —
+associated more with Waterfall methodology than anything else. Amazon's AI-focused
+IDE Kiro brought it back into circulation, reframing it as the backbone of an
+"AI-native SDLC" (or AIDLC).
+
+What it describes, at its core, is the Analyze → Design → Implement cycle.
+
+![Wikipedia: Systems development life cycle](Systems_development_life_cycle.svg.png)
+
+People mistakenly think SDLC means Waterfall. Iterative methodologies like Scrum and
+Agile follow exactly the same phases — the scope is simply limited to a subset of the
+feature list, usually one Feature at a time, broken down into User Stories and Tasks,
+with automated CI/CD pipelines in almost all modern organisations. Dismissing SDLC or
+associating it with all the old problems of Waterfall is not correct.
+
+If you use SDD to develop an entire product or large feature — an Epic in Scrum
+parlance — and give it a prompt like "I want to build a new database system", the
+scope is large, the artefacts generated are enormous, and the task list is huge.
+There is some sense to this criticism when SDD is used at that scale.
+
+If the entire project is specified in one go, it is impossible for a human to process
+so much cognitive load in one shot, or even across a few days. The result is that the
+specifier eventually gives up and becomes like an overworked clerk blindly signing
+documents, pressing "Yes" or "OK — Continue" in the SDD-driven agentic loop.
+
+However, SDD can be done for a smaller feature subset, and that is the better way to
+use it.
+
+Another pushback against SDD is that AI models are non-deterministic, so a
+specification can be interpreted differently by different models or the same model at
+different times. This is not a major problem in practice. SDD frameworks act as
+structured prompts, and modern models produce highly consistent outputs when guided
+by them.
+
+### The Real Problem: Why Code Becomes the Source of Truth — and Why That Is a Good Thing
+
+Good design and algorithmic ideas are crafted while coding. This is a simple truth
+evident to everyone who has written and shipped complex software — and not obvious to
+those who have not.
+
+This is why the initial analysis and design specification inevitably gets outdated and
+code becomes the source of truth. SDD tries to invert that relationship. Its
+fundamental thesis is that it is possible to specify good design upfront without
+tinkering with the code and without prototyping. That thesis is fundamentally wrong.
+
+The counter-argument is the strength of the code-generating AI model — that models
+are powerful enough to "craft" the best design, library, and framework decisions. But
+with strict SDD this becomes more of a problem even for very capable models, as the
+framework tries to follow the specification strictly, and the specification has holes
+or inaccuracies, resulting in code that is worse than what plain prompting would
+produce.
+
+This is a Catch-22. The specification has to be very rigorous in the first place, but
+to become rigorous it needs to be iteratively refined alongside the generated code.
+
+![catch22](catch22.png)
+
+In the case of fully autonomous coding, the LLM does autoregressive generation of
+code and design just as it writes out a poem. No refactoring or rework. We just have
+to hope the prompt or specification is good enough. The amount of code generated is
+so rapid and large that it is impossible to manually review or refactor.
+
+Fully autonomous coding is good for Rapid Prototyping or Proof of Concept — but not
+for Production.
+
+---
+
+## Part 2: An End-to-End Experiment to Test the SDD Thesis
+
+To test this limitation concretely, I ran an end-to-end experiment using Spec Kit,
+a popular Specification-Driven Development framework. I do not think the result is
+specific to Spec Kit alone — I would expect a similar pattern with OpenSpec, BMAD,
+or any comparable framework that moves from specification to implementation through
+an AI coding agent.
+
+The feature I chose was realistic and non-trivial: a Python module for working with
+US elevation data across USGS 3DEP/NED tiles. I had worked on this problem before,
+so I already knew the kind of architecture that eventually emerged from real
+implementation.
+
+The goal was simple: would an SDD flow surface a similar architecture on its own?
+
+---
+
+## III. The Experiment: Speckit End-to-End
 
 > Notes from a single-session experiment running the Speckit framework end-to-end on a
 > realistic Python module (US elevation profile over USGS 3DEP NED tiles), then
@@ -95,10 +191,10 @@ Until then.
 > [`.specify/memory/constitution.md`](./.specify/memory/constitution.md),
 > [`specs/001-us-elevation-profile/spec.md`](./specs/001-us-elevation-profile/spec.md),
 > and [`specs/001-us-elevation-profile/plan.md`](./specs/001-us-elevation-profile/plan.md).
-> The references are reproducible — you can open the file at the line number and read
-> the surrounding context yourself.
+> The references are reproducible — open the file at the line number and read the
+> surrounding context yourself.
 
-## Tools and Environment
+### Tools and Environment
 
 - `uv tool install specify-cli --from git+https://github.com/github/spec-kit.git@v0.8.9`
 - Claude Code (latest) with the Claude Opus 4.7 model
@@ -106,31 +202,9 @@ Until then.
 Followed the phases outlined in the Speckit documentation
 (<https://github.com/github/spec-kit>): Init → Constitution → Specify → Clarify → Plan.
 
-## Premise
-
-
-A specification framework — even a thoughtful one like Speckit — is only as good as
-the assumptions it bakes in. When the spec is produced by an external agent rather
-than by the engineer who will build (and live with) the system, two things go wrong:
-
-1. The agent locks in **measurable outcomes** before the architectural drivers are
-   known. Those outcomes then act as gravitational pull on later phases, rejecting
-   superior designs because they "violate the spec".
-2. The agent defaults to **path-of-least-resistance stacks** that pass the
-   constitution gates trivially, rather than stacks an experienced practitioner
-   would reach for after a couple of Google searches and pattern recall.
-
-The result is a process that *looks* rigorous (numbered FRs, SCs, gates, Sync Impact
-Reports) but quietly steers away from the better engineering choice. A human review
-step is supposed to catch this. In practice, the volume of generated artefact is
-exactly what makes the review step easy to skip.
-
-What follows is a phase-by-phase walkthrough of where the process worked, where it
-went sideways, and where the better answer was always one Google search away.
-
 ---
 
-## Phase 1 — `/speckit.constitution`
+### Phase 1 — `/speckit.constitution`
 
 **Transcript:** [`speckit_user_claude.txt:10`](./speckit_user_claude.txt) — user input.
 
@@ -144,25 +218,25 @@ with four non-negotiable principles (Code Quality, TDD, Consistency, Performance
 The principles themselves are reasonable. **Two of them quietly load the dice for
 later phases:**
 
-### Principle III — Consistency
+**Principle III — Consistency**
 
 > "New dependencies MUST be justified in writing: problem solved, alternatives
 > considered, license verified. Adding a dependency that duplicates an existing one's
 > purpose is forbidden." — `constitution.md:106`
 
-This is sensible policy in isolation. But it creates an asymmetric cost: **the
-stdlib option always wins ties** because it costs zero justification entries.
-We will see this become decisive in Phase 4.
+Sensible in isolation. But it creates an asymmetric cost: **the stdlib option always
+wins ties** because it costs zero justification entries. This becomes decisive in
+Phase 4.
 
-### Principle IV — Performance Requirements
+**Principle IV — Performance Requirements**
 
 > "Every feature plan MUST declare measurable performance budgets in `plan.md` …
 > A regression exceeding 5% on a declared budget MUST block merge until either fixed
 > or formally re-baselined with documented justification." — `constitution.md:119–126`
 
-Also sensible. But the budget is declared *before* the architecture is chosen.
-Once a number is on paper, it becomes the criterion against which all future
-architectures are judged — even when the number was a guess.
+Also sensible. But the budget is declared *before* the architecture is chosen. Once a
+number is on paper, it becomes the criterion against which all future architectures
+are judged — even when the number was a guess.
 
 **Phase verdict:** Good. The constitution itself is fine. The hidden tax — that
 stdlib beats deps and that early-declared budgets harden into gates — is invisible
@@ -170,7 +244,7 @@ at this stage.
 
 ---
 
-## Phase 2 — `/speckit.specify`
+### Phase 2 — `/speckit.specify`
 
 **Transcript:** [`speckit_user_claude.txt:496–497`](./speckit_user_claude.txt) — user input.
 
@@ -179,9 +253,8 @@ at this stage.
 two points of latitude, longitude - of receiver and transmitter
 ```
 
-A single sentence. No mention of scale, format, accuracy, latency, deployment
-context, or interactivity. The kind of thing a teammate would clarify in chat before
-opening a doc.
+A single sentence. No mention of scale, format, accuracy, latency, or deployment
+context. The kind of thing a teammate would clarify in chat before opening a doc.
 
 The agent produced a spec anyway. From the report at
 [`speckit_user_claude.txt:1046–1054`](./speckit_user_claude.txt):
@@ -196,27 +269,23 @@ The agent produced a spec anyway. From the report at
 > | Data acquisition | User supplies files; no auto-download in v1 |
 > | RF analysis scope | Elevation profile only; LOS/Fresnel/link-budget deferred |"
 
-Two of those three assumptions turned out to be **wrong**. The first session's
-spec assumed CONUS-only and a roughly hobby-scale dataset. The real target
-(revealed in Phase 3) is full CONUS + Hawaii + Puerto Rico + Alaska,
-~1,756 NED tiles, ~23 billion samples, ≈ 180 GB raw — a different
-architectural problem.
+Two of those three assumptions were **wrong**. The first session's spec assumed
+CONUS-only and a roughly hobby-scale dataset. The real target (revealed in Phase 3)
+is full CONUS + Hawaii + Puerto Rico + Alaska, ~1,756 NED tiles, ~23 billion samples,
+≈ 180 GB raw — a completely different architectural problem.
 
 **Phase verdict:** The agent silently converted ambiguity into "assumptions" and
-declared the spec complete. The 16 checklist boxes were green, the FRs were
-testable, and the architectural drivers were still missing. This is the
-specification-fragility failure mode: the artefact looks done because every
-template slot is filled, not because the engineering question is answered.
+declared the spec complete. The 16 checklist boxes were green, the FRs were testable,
+and the architectural drivers were still missing. The artefact looks done because
+every template slot is filled — not because the engineering question is answered.
 
 ---
 
-## Phase 3 — `/speckit.clarify`
+### Phase 3 — `/speckit.clarify`
 
 **Transcript:** [`speckit_user_claude.txt:1083`](./speckit_user_claude.txt) onward.
 
 This is the phase that actually worked.
-
-### What clarify caught
 
 [`speckit_user_claude.txt:1403–1406`](./speckit_user_claude.txt):
 
@@ -244,30 +313,26 @@ options:
 | C | Metadata index + cached decoded tile payload on disk |
 
 The user picked B. **B is reasonable, but it implicitly closes the door on a class
-of architectures — including the one we'll see in Phase 5.** The "cached decoded
-payload" framing of option C made it sound like a heavyweight extra; in reality, a
-single transcoded Zarr store is roughly that same idea, but it is a different
-*product shape*, not an optional accelerator. The clarify menu didn't present that
-shape as a peer.
+of architectures.** The "cached decoded payload" framing of option C made it sound
+like a heavyweight extra; in reality, a single transcoded Zarr store is roughly that
+same idea — but it is a different *product shape*, not an optional accelerator. The
+clarify menu didn't present that shape as a peer option.
 
-This is the most subtle failure in the framework: a clarify question's option
-*menu* is itself a design decision, made by the agent, without the user being
-told it is one.
+This is the most subtle failure in the framework: a clarify question's option *menu*
+is itself a design decision, made by the agent, without the user being told it is one.
 
-**Phase verdict:** Up to and including clarify, the framework was net-positive.
-The questions were sharp; the dataset-scale answer in particular saved hours of
-wrong-direction work. The hidden cost is that menus phrased by the agent prune
-the design space silently. The user, here, did not know that picking B closed
-out the Zarr-transcode option later.
+**Phase verdict:** The framework was net-positive up to and including clarify. The
+questions were sharp; the dataset-scale answer saved hours of wrong-direction work.
+The hidden cost is that menus phrased by the agent prune the design space silently.
 
-> *Aside: this also gave the agent room to deduce some performance assumptions
-> directly from the constitution — e.g., "5 min cold registration" — as if those
-> numbers had been independently engineered. They had not. They were anchored by
-> a feel for what "fast enough" sounded like for a clarify menu.*
+> *Note: this also gave the agent room to deduce performance assumptions directly from
+> the constitution — e.g., "5 min cold registration" — as if those numbers had been
+> independently engineered. They had not. They were anchored by a feel for what "fast
+> enough" sounded like for a clarify menu.*
 
 ---
 
-## Phase 4 — `/speckit.plan`
+### Phase 4 — `/speckit.plan`
 
 **Transcript:** [`speckit_user_claude.txt:3015`](./speckit_user_claude.txt) onward.
 
@@ -283,8 +348,8 @@ selected the following stack:
 > [`plan.md:60–65`](./specs/001-us-elevation-profile/plan.md)
 
 When asked to justify the choice
-([`speckit_user_claude.txt:3470–3530`](./speckit_user_claude.txt)), the agent
-listed four reasons:
+([`speckit_user_claude.txt:3470–3530`](./speckit_user_claude.txt)), the agent listed
+four reasons:
 
 > 1. "Stdlib, zero new dependency. … Under Principle III's 'new dependency must be
 >    justified in writing' bar, that's the cheapest possible answer."
@@ -292,41 +357,33 @@ listed four reasons:
 > 3. "R-tree virtual table makes the spatial lookup an indexed query for free."
 > 4. "WAL mode is crash-safe."
 
-Re-read reason #1 carefully. **"Stdlib, zero new dependency"** is doing most of
-the work. Principle III, recall, says new deps need a justification entry. That
-made the comparison structurally unfair: SQLite started ahead of every other
-candidate by exactly one paragraph of writing the agent didn't have to produce.
-
-Reasons #2–#4 are real, but they are also things any reasonable storage layer
-would deliver (atomic row replace, spatial index, crash safety). The unique
-property SQLite owns is the stdlib status. The plan let that one property
-dominate.
+Re-read reason #1. **"Stdlib, zero new dependency"** is doing most of the work.
+Principle III says new deps need a justification entry — so SQLite started ahead of
+every other candidate by exactly one paragraph of writing the agent didn't have to
+produce. The comparison was structurally unfair from the start.
 
 The rejected alternatives table at [`speckit_user_claude.txt:3509–3519`](./speckit_user_claude.txt)
-is revealing:
+makes the pattern visible:
 
 > | Alternative | Failed on |
 > |---|---|
 > | JSON sidecar | No atomic single-row update; full read-modify-write |
-> | Parquet | Columnar scans are great, but updates rewrite the whole file. Plus a pyarrow runtime dep — fails Principle III's bar |
-> | LMDB / BerkeleyDB | Fast KV, but no spatial indexing, harder to inspect, extra dep |
-> | DuckDB embedded | Powerful query engine for a workload that's not analytical. Extra dep without a matching benefit |
+> | Parquet | Columnar scans are great, but updates rewrite the whole file. Plus a pyarrow runtime dep — **fails Principle III's bar** |
+> | LMDB / BerkeleyDB | Fast KV, but no spatial indexing, harder to inspect, **extra dep** |
+> | DuckDB embedded | Powerful query engine for a workload that's not analytical. **Extra dep** without a matching benefit |
 
-Notice the phrasing. Three of the four rejections invoke Principle III's
-dependency bar. **The constitution did the rejecting; the agent was just the
-microphone.**
+Three of four rejections invoke Principle III's dependency bar. **The constitution
+did the rejecting; the agent was just the microphone.**
 
 **Phase verdict:** The plan is internally consistent and would pass review. It is
 also a *local optimum*, reached by minimising friction against the constitution
-rather than by reasoning about the problem. The lower-friction choice is not the
-same as the better choice.
+rather than by reasoning about the problem.
 
 ---
 
-## Phase 5 — The human pushback
+## IV. The Necessity of Human Pushback
 
-This is the post-Speckit phase the framework doesn't have a name for. After the
-plan was committed
+After the plan was committed
 ([`speckit_user_claude.txt:3424`](./speckit_user_claude.txt) — commit `4f1b85a`),
 the user asked the obvious follow-up:
 
@@ -340,40 +397,38 @@ the user asked the obvious follow-up:
 > there is no 5 mt starup delay then" —
 > [`speckit_user_claude.txt:3609–3610`](./speckit_user_claude.txt)
 
-The agent's first response (Zarr would "blow past SC-008") at
+The agent's first response at
 [`speckit_user_claude.txt:3569–3572`](./speckit_user_claude.txt):
 
 > "The transcode cost blows past SC-008. SC-008 budgets 5 minutes for cold
 > registration. … reading + decompressing + recompressing + writing through Zarr
-> takes 10–30 minutes realistically. You'd either miss the budget or have to declare
-> a separate one-time 'first-time setup' phase outside the spec."
+> takes 10–30 minutes realistically."
 
-Read that closely. **The constitution-derived budget is being used as the reason
-a better architecture cannot be considered.** The 5-minute number is itself a
-choice — made by the agent in Phase 2/3 with no engineering data behind it — and
-it has now hardened into a constraint that disqualifies designs.
+**The constitution-derived budget is being used as the reason a better architecture
+cannot be considered.** The 5-minute number was made up by the agent in Phase 2/3
+with no engineering data behind it, and it has hardened into a constraint that
+disqualifies designs.
 
-When the user pushed back, the agent walked the position back
+Under user pushback, the agent walked it back
 ([`speckit_user_claude.txt:3616–3617`](./speckit_user_claude.txt)):
 
 > "Fair push-back — and I want to be honest about where my prior answer overstated
-> the case. Let me re-do the trade-off properly."
+> the case."
 
-And again ([`speckit_user_claude.txt:3656–3660`](./speckit_user_claude.txt)):
+And conceded ([`speckit_user_claude.txt:3656–3660`](./speckit_user_claude.txt)):
 
 > "You're right that I overweighted reason #2 ('blows past SC-008'). That's only true
 > if we keep SC-008 framed as 'registration must be fast.' Re-framing registration as
 > 'one-time setup that may take 30 min' is a perfectly reasonable spec change."
 
-The Zarr design needs nothing in the spec that isn't already there — except the
+The Zarr design needed nothing in the spec that wasn't already there — except the
 willingness to revise an arbitrary number the spec itself produced.
 
-### The R-tree + Zarr alternative (proposed by the user in a follow-up session)
+### The Right Stack: R-tree + Zarr
 
 The user's proposal in
-[`speckit_user_claude.txt:3704–3747`](./speckit_user_claude.txt) is a clean piece
-of geospatial engineering anyone who has worked with NED tiles before would
-recognise:
+[`speckit_user_claude.txt:3704–3747`](./speckit_user_claude.txt) is a clean piece of
+geospatial engineering anyone who has worked with NED tiles before would recognise:
 
 ```python
 def openZarrDataSet(directoryStore, rows=NED_FILE_HEIGHT, columns=NED_FILE_HEIGHT):
@@ -388,86 +443,92 @@ def openZarrDataSet(directoryStore, rows=NED_FILE_HEIGHT, columns=NED_FILE_HEIGH
     )
 ```
 
-The architecture, in three lines:
+The architecture in three lines:
 
 1. One-time transcode of GeoTIFFs into a Zarr store keyed by `(lat_idx, lon_idx)`,
    backed by LMDB (mmap'd random reads), wrapped in an `LRUStoreCache`.
-2. An R-tree built from the per-tile bounding boxes — *the actual tiles registered,
-   not a hardcoded territory grid* — for line-vs-tile intersection on profile
-   queries.
-3. Query path: pyproj geodesic line → R-tree intersect → chunk keys → Zarr reads
-   → bilinear. No SQLite, no rasterio-per-file-open in the hot path, native
-   support for the irregular US-territories footprint.
+2. An R-tree built from the per-tile bounding boxes of *actually registered tiles* for
+   line-vs-tile intersection on profile queries.
+3. Query path: pyproj geodesic line → R-tree intersect → chunk keys → Zarr reads →
+   bilinear. No SQLite, no per-file rasterio open in the hot path, native support for
+   the irregular US-territories footprint (Alaska is 1°×2°, Hawaii is sparse islands,
+   Guam is a point).
 
-This is **better** than the plan-of-record on at least three dimensions:
+This is better than the plan-of-record on three dimensions:
 
 - **Right algorithmic tool**: R-tree is the textbook structure for line-segment
-  intersection over irregular polygons. Plan-of-record uses R-tree too — but
-  inside SQLite, as a virtual table, against a workload that doesn't need any of
-  the row-store machinery wrapped around it.
-- **Right storage tool**: chunked tensor reads are exactly what an elevation
-  profile is. Zarr was built for this access pattern; rasterio + GeoTIFF is the
-  legacy shape.
-- **Native heterogeneity**: Alaska is 1°×2°, Hawaii is sparse, Guam is a point.
-  R-tree handles that without any analytical floor/ceil shortcut that would have
-  to be debugged later.
+  intersection over irregular polygons. The plan-of-record embeds R-tree inside
+  SQLite, adding row-store machinery the workload doesn't need.
+- **Right storage tool**: chunked tensor reads are exactly what an elevation profile
+  is. Zarr was built for this access pattern; rasterio + GeoTIFF is the legacy path.
+- **Native heterogeneity**: irregular tile footprints are handled without any
+  floor/ceil shortcut that would have to be debugged later.
 
 An experienced engineer arrives at this design with two Google searches: "USGS NED
 tile lazy access python" and "geospatial chunk store python". The Speckit agent,
-constrained by a constitution that penalised new dependencies and a clarify menu
-that didn't list this shape as an option, took the SQLite path.
+penalised for new dependencies and offering clarify menus that never listed this
+shape as an option, took the SQLite path.
 
 ---
 
-## Where each phase actually stood
+## V. Conclusion & Takeaways
+
+### Where Each Phase Actually Stood
 
 | Phase | Net value | Failure mode |
 |---|---|---|
 | `/speckit.constitution` | Positive — principles are sound | Hidden tax: stdlib beats deps; early budgets harden into gates |
 | `/speckit.specify` | Negative when input is vague | Silently converts ambiguity to "assumptions"; 16 green boxes ≠ specified |
 | `/speckit.clarify` | **Strongly positive** | Menu choices prune the design space without saying so |
-| `/speckit.plan` | Negative for non-trivial stacks | Defaults to the stack that passes the constitution most cheaply, not the one that fits the problem |
-| Post-plan pushback (human) | Required | Recovers the better architecture, but only if the user knows enough to ask |
+| `/speckit.plan` | Negative for non-trivial stacks | Defaults to the stack that passes the constitution cheapest, not the one that fits the problem |
+| Post-plan pushback (human) | Required | Recovers the better architecture — but only if the user knows enough to ask |
 
-The pattern: **the framework's quality peaks at clarify, then declines as the
-agent gets enough scaffolding to commit to choices.** Each later artefact looks
-more authoritative than the last (numbered FRs, gate tables, rejected-alternatives
-matrices), but the underlying decisions are increasingly anchored to earlier
-arbitrary numbers rather than to the engineering problem.
+The pattern: **the framework's quality peaks at clarify, then declines as the agent
+accumulates enough scaffolding to commit to choices.** Each later artefact looks more
+authoritative than the last (numbered FRs, gate tables, rejected-alternatives
+matrices), but the underlying decisions are increasingly anchored to earlier arbitrary
+numbers rather than to the engineering problem.
+
+### The Review Hazard
+
+Frameworks generate vast amounts of artefacts — sync impact reports, passing gate
+tables, constitution checks, rejected-alternatives matrices. This makes the process
+*look* rigorous. Which is exactly what makes critical human review easy to skip. The
+friction sits in the wrong place: it is harder to read a 254-line plan critically
+than to skim it approvingly.
+
+### What This Means for Using Speckit or Any SDD Framework
+
+1. **Treat "no new deps" constitution rules as biases, not neutrals.** They tilt
+   every later decision toward stdlib stacks. If the better engineering answer
+   requires a dependency, you will need to actively defend it; the framework will not.
+
+2. **Treat measurable outcomes (SC-* numbers) as guesses until ratified by an
+   engineer with domain knowledge.** The agent will quote them back at you later as if
+   they were measured. They were not.
+
+3. **Read every clarify menu as a design proposal in disguise.** The options listed
+   are the design space the agent thinks exists. If the option you want is not on the
+   menu, that is the failure — not "I should pick the best of these three."
+
+4. **The plan phase is the worst time to discover an architectural mismatch.** Plans
+   are long, internally consistent documents that are exhausting to revise. Push back
+   during clarify, or before.
+
+5. **A specification produced by an agent must be reviewed by an engineer willing to
+   discard the agent's safe architectural choices** — not just fact-check its
+   requirements. Without that review, the framework delivers a polished local optimum
+   and calls it done.
+
+Frameworks like Speckit and OpenSpec are genuinely good tools. The 12 functional
+requirements, the bilinear-interpolation clarification, the no-data-segment shape —
+all of those are better artefacts than what the user would have produced free-hand.
+The lesson is narrower: **they are not silver bullets, and they are at their most
+dangerous when they look the most rigorous.**
 
 ---
 
-## What this means for using Speckit (or any spec framework with an agent in it)
-
-1. **Treat the constitution's "no new deps" type rules as biases, not neutrals.**
-   They tilt every later decision toward stdlib stacks. If the better engineering
-   answer requires a dep, you'll need to actively defend it; the framework will
-   not.
-2. **Treat measurable outcomes (SC-* numbers) as guesses until an engineer with
-   domain knowledge ratifies them.** The agent will quote them back at you later
-   as if they were measured. They weren't.
-3. **Read every clarify menu as a design proposal in disguise.** The options
-   listed are the design space the agent thinks exists. If the option you want
-   isn't on the menu, that is the failure — not "I should pick the best of these
-   three".
-4. **The plan phase is the worst time to discover an architectural mismatch.**
-   Plans are long, internally consistent documents that are exhausting to revise.
-   Push back during clarify, or before.
-5. **Generated artefact volume is a review hazard.** A 254-line plan with a Sync
-   Impact Report and four passing gate tables takes longer to *read critically*
-   than to *skim approvingly*. The friction sits in the wrong place.
-
-The Speckit experience here is not an indictment of structured specification.
-The 12 functional requirements, the bilinear-interpolation clarification, the
-no-data-segment shape — all of those are better artefacts than what the user
-would have produced free-hand. The lesson is narrower: **a specification produced
-by an agent must be reviewed by an engineer who is willing to discard the agent's
-architectural choices, not just to fact-check its requirements.** Without that
-review, the framework delivers a polished local optimum and calls it done.
-
----
-
-## Appendix — quick reference for the line cites
+## Appendix — Quick Reference for Line Citations
 
 | Source | What's there |
 |---|---|
@@ -475,7 +536,7 @@ review, the framework delivers a polished local optimum and calls it done.
 | [`speckit_user_claude.txt:496`](./speckit_user_claude.txt) | `/speckit.specify` invocation — one-sentence input |
 | [`speckit_user_claude.txt:1046–1054`](./speckit_user_claude.txt) | Three "assumptions" silently chosen by specify |
 | [`speckit_user_claude.txt:1440–1442`](./speckit_user_claude.txt) | User overturns CONUS-only assumption with real scale |
-| [`speckit_user_claude.txt:2587–2603`](./speckit_user_claude.txt) | Clarify option menu (B chosen, C/Zarr-shaped not listed) |
+| [`speckit_user_claude.txt:2587–2603`](./speckit_user_claude.txt) | Clarify option menu (B chosen; Zarr-shaped option not listed) |
 | [`speckit_user_claude.txt:3323`](./speckit_user_claude.txt) | Plan selects SQLite + R-tree |
 | [`speckit_user_claude.txt:3470–3530`](./speckit_user_claude.txt) | SQLite justification — "stdlib, zero new dependency" leads |
 | [`speckit_user_claude.txt:3569–3572`](./speckit_user_claude.txt) | Zarr first rejected on SC-008 budget |
